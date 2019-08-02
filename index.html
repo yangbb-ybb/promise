@@ -1,19 +1,65 @@
 <html>
+<meta charset="utf-8">
 
 <head></head>
+<div id="app">H5</div>
 
 <body>
   <script src="./promise.js"></script>
   <script>
-    new mPromise((reslove) => { reslove() }).then(() => {
-      console.log(213234);
+    // 同步执行 代码 模式
+    // 同步理解 
+    // 同步时：.then是同步的 所以能链式同步
+    // 当异步操作时
+    new mPromise((re) => {
+      // setTimeout(() => {
+      //   re();
+      // }, 2000);
+      //这里的this 肯定是 window
+      //re();
     }).then(() => {
-      setTimeout(() => {
-        console.log(22321321)
-      }, 2000)
-    }).then(() => {
-      console.log(3333)
-    })
+      // 这两个
+      //console.log(111111);
+      // return new mPromise((r) => {
+      //   setTimeout(() => {
+      //     console.log(22333);
+      //     r({ a: 111 })
+      //   }, 2000)
+      // })
+      //return { a: 1 };
+    }).then((res) => {
+      console.log(222222);
+      //return 2;
+    }).catch(console.log)
+    // 异步连调用 也是Ok的
+    // .then(() => {
+    //   console.log(222222)
+    //   return new mPromise((re) => {
+    //     setTimeout(re, 2000)
+    //   })
+    // }).then(() => {
+    //   console.log(333333)
+    // })
+    // .then(() => {
+    //   setTimeout(() => {
+    //     console.log(222222)
+    //   }, 1000);
+    //   return 2
+    // }).then(() => {
+    //   console.log(33333)
+    // }).catch(console.log);
+    // 稍后 再测试
+    // 异步执行 代码 模式
+  </script>
+
+  <script>
+    // 为什么会卡，是因为电脑 性能 太好了
+    // class a {
+    //   f() {
+    //     // 这里的this 因为是 a 调用的 所以这里的 this 就是 a
+    //   }
+    // }
+    // new a().f()
   </script>
 </body>
 

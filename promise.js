@@ -1,5 +1,6 @@
 // 实现promise的方法
 // 你就是个垃圾 
+// 最后一个问题  为什么 函数 能停留住 时间 等待下一个继续进行
 class mPromise {
   constructor(executor) {
     this.state = 'pending';
@@ -8,6 +9,7 @@ class mPromise {
     this.onResolvedCallbacks = function () { };
     this.onRejectedCallbacks = function () { };
     // 内部变量 你都不知道
+    // 操蛋  最后的 问题  为什么能停留3秒
     let resolve = value => {
       if (this.state === 'pending') {
         this.state = 'fulfilled';
@@ -30,14 +32,14 @@ class mPromise {
       reject(err);
     }
   }
-  // promise 能链式调用的原因是 每次都返回 一个新的promise，而他把当前then方法存在了自己的promise里面  所以他能够完成 链式调用
-  // promise then 方法
+  // mPromise 能链式调用的原因是 每次都返回 一个新的promise，而他把当前then方法存在了自己的promise里面  所以他能够完成 链式调用
+  // mPromise then 方法
   /**
-   * 理解了 promise 了这个then 方法 promise基本就全部理解了 
+   * 理解了 mPromise 了这个then 方法 promise基本就全部理解了 
    * 还是从同步开始 一点一点 来
    * 同步：当进入到这里的 时候 当前的状态 肯定是 fulfilled
    * 死磕她
-   * new promise().then()
+   * new mPromise().then()
    */
   // then 函数 肯定是只会 调用一次的
   /**
@@ -50,7 +52,7 @@ class mPromise {
     // console.log('%center then func!!!', 'color:red');
     onFulfilled = typeof onFulfilled === 'function' ? onFulfilled : value => value;
     onRejected = typeof onRejected === 'function' ? onRejected : err => { throw err };
-    // 这里的 this 肯定是 new promise()  promise1这个 实例
+    // 这里的 this 肯定是 new mPromise()  promise1这个 实例
     return new mPromise((resolve, reject) => {
       /**
        * Q1 为什么 这里的 状态 不是pending
@@ -96,7 +98,8 @@ class mPromise {
         }
       };
 
-      //先忽略 -----
+      // 当代码 走进异步操作的 时候
+      // 也就是 函数存在一个变量 里面啊
       if (this.state === 'pending') {
         this.onResolvedCallbacks = () => {
           try {
@@ -122,22 +125,24 @@ class mPromise {
   }
 }
 //  这傻逼是 干什么的
-//  为什么 要抽出 这个方法就是 未来解决 当我们return 一个新的 promise 的时候
+//  为什么 要抽出 这个方法就是 未来解决 当我们return 一个新的 mPromise 的时候
 function resolvePromise(promise2, x, resolve, reject) {
   // if (x === promise2) {
-  //   return reject(new TypeError('Chaining cycle detected for promise'));
+  //   return reject(new TypeError('Chaining cycle detected for mPromise'));
   // }
   /**
    * 调用 reslove就改变了当前的状态
    */
   //console.error(x, typeof x);
   let called;
+  // 一般来说 x 就是个普通值  当x 是promise 的 时候
+  // 当是reslove的 时候
   if (x instanceof mPromise) {
     // 函数
-    let then = x.then;// 肯定有 then 方法
+    let then = x.then;  // 肯定有 then 方法
     // ok 麻痹的 我去年 看的是什么 垃圾
     // 这个是 关键的函数
-    // promise.then(success,fail);
+    // mPromise.then(success,fail);
     /**
      * 这个y 是怎么进来的
      */
@@ -145,14 +150,13 @@ function resolvePromise(promise2, x, resolve, reject) {
     //好吧 这个 套路好深 我服了 大神
     // 这里直接 调用一个
     // 好吧 这个 y 就是  reslove 的值
+    // 应该 就是这个 函数的 功劳
+    // 这是为什么
+    // 好像 想通了 这里新建 一个一个promise
     then.call(x, y => {
-      if (called) return;
-      called = true;
+      // if (called) return;
+      // called = true;
       resolvePromise(promise2, y, resolve, reject);
-    }, err => {
-      if (called) return;
-      called = true;
-      reject(err);
     })
   } else {
     resolve(x);

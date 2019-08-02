@@ -2,7 +2,7 @@
 <meta charset="utf-8">
 
 <head></head>
-<div id="app">H5</div>
+<div id="app" onclick="console.log(55555)">H5</div>
 
 <body>
   <script src="./promise.js"></script>
@@ -10,27 +10,27 @@
     // 同步执行 代码 模式
     // 同步理解 
     // 同步时：.then是同步的 所以能链式同步
-    // 当异步操作时
-    new mPromise((re) => {
-      // setTimeout(() => {
-      //   re();
-      // }, 2000);
-      //这里的this 肯定是 window
-      //re();
-    }).then(() => {
-      // 这两个
-      //console.log(111111);
-      // return new mPromise((r) => {
-      //   setTimeout(() => {
-      //     console.log(22333);
-      //     r({ a: 111 })
-      //   }, 2000)
-      // })
-      //return { a: 1 };
-    }).then((res) => {
-      console.log(222222);
-      //return 2;
-    }).catch(console.log)
+    // 当异步的时候 查看代码 是怎么同步的？
+    // new mPromise((re) => {
+    //   setTimeout(() => {
+    //     re();
+    //   }, 2000);
+    //   //这里的this 肯定是 window
+    //   //re();
+    // }).then(() => {
+    //   // 这两个
+    //   console.log(111111);
+    //   // return new mPromise((r) => {
+    //   //   setTimeout(() => {
+    //   //     console.log(22333);
+    //   //     r({ a: 111 })
+    //   //   }, 2000)
+    //   // })
+    //   //return { a: 1 };
+    // }).then((res) => {
+    //   console.log(222222);
+    //   //return 2;
+    // }).catch(console.log)
     // 异步连调用 也是Ok的
     // .then(() => {
     //   console.log(222222)
@@ -50,6 +50,28 @@
     // }).catch(console.log);
     // 稍后 再测试
     // 异步执行 代码 模式
+    // 异步执行的时候， 我们的代码 也是同步的 所以页没问题
+    // 当 new Promise 的 时候 这个才是问题最大的
+    new mPromise((re) => {
+      setTimeout(() => {
+        re();
+      }, 2000);
+    }).then(() => {
+      console.log(111111);
+    })
+      .then(() => {
+        console.time();
+        //  最后一个 问题  为什么这里额能提留3 秒的 时间
+        return new mPromise((r) => {
+          setTimeout(() => {
+            console.log('-----------')
+            r({ a: 123 });
+          }, 5000)
+        })
+      })
+      .then((res) => {
+        console.timeEnd()
+      }).catch(console.log)
   </script>
 </body>
 
